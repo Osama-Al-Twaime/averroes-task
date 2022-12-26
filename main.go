@@ -1,8 +1,8 @@
 package main
 
 import (
+	"averroes-task/auth"
 	"averroes-task/handlers"
-	"averroes-task/store"
 	"context"
 	"fmt"
 	"net/http"
@@ -21,7 +21,31 @@ func main() {
 	r.GET("/status", healthCheck)
 
 	// register a new user
-	r.POST("/register", handlers.RegisterNewUser)
+	r.POST("/users/register", handlers.RegisterNewUser)
+
+	// login
+	r.POST("/users/login", handlers.Login)
+
+	// add movie to watchlist
+	r.POST("/users/watchlist/add", auth.Auth(), handlers.AddToWatchlist)
+
+	// get movie
+	r.GET("/movies/:id", handlers.GetMovieById)
+
+	// add movie
+	r.POST("/movies/add", auth.Auth(), handlers.AddMovie)
+
+	// update movie
+	r.POST("/movies/edit/:id", auth.Auth(), handlers.UpdateMovie)
+
+	// delete movie
+	r.DELETE("/movies/delete/:id", auth.Auth(), handlers.DeleteMovie)
+
+	// list movies
+	r.GET("/movies/list", handlers.ListMovies)
+
+	// rate and review movie
+	r.POST("/movies/review", auth.Auth(), handlers.AddReview)
 
 	// serving docs
 	r.Static("/docs", "./docs")
@@ -49,8 +73,7 @@ func InitServer(r *gin.Engine) {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	fmt.Println(store.GetPostgres())
-
+	// to handle request with go routines (concurrency)
 	go func() {
 		// start the web server on port and accept requests
 		if err := svr.ListenAndServe(); err != nil {

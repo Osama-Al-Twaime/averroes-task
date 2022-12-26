@@ -34,6 +34,12 @@ func GetPostgres() *sql.DB {
 			}
 
 			dbClient = db
+
+			// check db
+			err = db.Ping()
+			if err != nil {
+				fmt.Println("Error pinging the db")
+			}
 		})
 	}
 

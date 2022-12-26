@@ -1,4 +1,4 @@
-SHELL := C:\Users\Admin\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Windows PowerShell
+# SHELL := /bin/zsh
 
 run:
-	$(shell cat .env | tr "\n" " ") go run .
+	$(shell grep -v '#' .env | tr "\n" " ") go run .
